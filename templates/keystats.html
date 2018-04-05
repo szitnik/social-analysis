@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            br {
+               display: block;
+               margin-top: 10px;}
+            .submit_form{
+                width: 50%;}
+            checklabel {
+                display: inline-block;}
+            table {
+                border-collapse: collapse;
+                table-layout : fixed;}
+            table, th, td {
+                border: 1px solid black;}
+        </style>
+        <meta charset="utf-8" />
+        <script src='../static/Chart.min.js'></script>
+        <script src='../static/Chart.bundle.js'></script>
+    </head>
+
+    <body>
+        <h3>SocioPower - keyword statistics</h3>
+        <div class="submit_form">
+            <form action="." method="POST">
+                <p>List of keywords (separated with comma and space): <input type="text" name="query" style="width: 90%;" value="{{ request.form['query'] }}"><br>
+                From date: <input type="date" name="date_from" value="{{ request.form['date_from'] }}"><br>
+                To date: <input type="date" name="date_to" value="{{ request.form['date_to'] }}"><br>
+                Media: <checklabel> <input type="checkbox" name="soc_media" value="facebook" id="facebook"> Facebook </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="twitter" id="twitter"> Twitter </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="googleplus" id="googleplus"> Google+ </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="tumblr" id="tumblr"> Tumblr </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="youtube" id="youtube" > Youtube </checklabel>
+                    <checklabel><input type="checkbox" name="selectall" onClick="toggle(this)"> Select all</checklabel> <br>
+                    <input type="submit" name="query-form" value="Submit"> </p>
+            </form>
+        </div>
+
+        Reach & Engagement <br>
+
+        <table>
+            <tr>
+                <td align="center">Keyword</td>
+                <td align="center">Reach</td>
+                <td align="center">Engagement</td>
+            </tr>
+
+            {% for key, r in reach.iteritems() %}
+            <tr>
+                    <td align="center">{{ key }}</td>
+                    <td align="right">{{ r[0] }}</td>
+                    <td align="right">{{ r[1] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        Keyword stats <br>
+
+        <table>
+            <tr>
+                <td rowspan="2" align="center">Keyword</td>
+                {% for m in media %}
+                    <td colspan="3" align="center">{{ m }}</td>
+                {% endfor %}
+                <td align="center">Summary</td>
+            </tr>
+            <tr>
+                {% for m in media %}
+                    <td align="center">Post</td>
+                    <td align="center">User</td>
+                    <td align="center">Comment</td>
+                {% endfor %}
+            </tr>
+            {% for keyword, statistics in stats.iteritems() %}
+            <tr>
+                <td align="center">{{ keyword }}</td>
+                {% for m in media %}
+                    {% for s in ['post', 'user', 'comment'] %}
+                        {% if statistics[s][m] %}
+                            <td align="right">{{ statistics[s][m] }}</td>
+                        {% else %}
+                            <td align="right">0</td>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                <td align="right">{{ keyword_sum[keyword] }}</td>
+            {% endfor %}
+            </tr>
+            <tr>
+                <td align="center">Summary</td>
+                {% for m in media %}
+                    {% for s in ['post', 'user', 'comment'] %}
+                        <td align="right">{{ media_sum[m][s] }}</td>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        </table>
+
+        Frequency charts <br>
+        {% for key, value in frequency.iteritems() %}
+                <input type="radio" name="keys" id="{{ key }}" checked="{{ nr_key[key] == 0 }}" onclick="keyfunc()"> {{ key }}
+        {% endfor %}
+        <div><canvas id="freqChartPrint" height="50"></canvas></div>
+
+        <input type="radio" name="freq" value="hour" id="hour" onclick="charfunc()"> By Hour
+        <input type="radio" name="freq" value="day" id="day" onclick="charfunc()"> By Day
+        <input type="radio" name="freq" value="week" id="week" onclick="charfunc()"> Last Week
+        <input type="radio" name="freq" value="twoweeks" id="twoweeks" onclick="charfunc()"> Last 2 Weeks
+        <input type="radio" name="freq" value="month" id="month" onclick="charfunc()" checked> Last Month
+    </body>
+
+    <script>
+        function toggle(source) {
+            checkboxes = document.getElementsByName('soc_media');
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+
+        var freqs = {{ frequency|tojson|safe }};
+        var ky = document.querySelector('input[name = "keys"]:checked').id;
+
+        var dayData = {
+            labels: freqs[ky]['day'][0],
+            datasets: [{
+                data: freqs[ky]['day'][1]
+            }]
+        };
+        var hourData = {
+            labels: freqs[ky]['hour'][0],
+            datasets: [{
+                data: freqs[ky]['hour'][1]
+            }]
+        };
+        var weekData = {
+            labels: freqs[ky]['week'][0],
+            datasets: [{
+                data: freqs[ky]['week'][1]
+            }]
+        };
+        var twoweeksData = {
+            labels: freqs[ky]['twoweeks'][0],
+            datasets: [{
+                data: freqs[ky]['twoweeks'][1]
+            }]
+        };
+        var monthData = {
+            labels: freqs[ky]['month'][0],
+            datasets: [{
+                data: freqs[ky]['month'][1]
+            }]
+        };
+
+        var ctx1 = document.getElementById("freqChartPrint").getContext("2d");
+            var chartInstance = new Chart(ctx1, {
+                type: 'line',
+                data: monthData,
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Results over time'
+                    }
+                 }
+            });
+
+        function keyfunc()
+        {
+            var freqs = {{ frequency|tojson|safe }};
+            var ky = document.querySelector('input[name = "keys"]:checked').id;
+            var fq = document.querySelector('input[name = "freq"]:checked').id;
+            var chartLabels = freqs[ky][fq][0];
+            var chartValues = freqs[ky][fq][1];
+
+            var chartData = {
+                labels: chartLabels,
+                datasets: [{
+                    data: chartValues
+                }]
+            };
+
+
+            var ctx1 = document.getElementById("freqChartPrint").getContext("2d");
+                var chartInstance = new Chart(ctx1, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Results over time'
+                        }
+                     }
+                });
+        }
+
+        function charfunc()
+            {
+            var week = document.getElementById('week');
+            var twoweeks = document.getElementById('twoweeks');
+            var month = document.getElementById('month');
+            var hour = document.getElementById('hour');
+            var day = document.getElementById('day');
+
+            var freqs = {{ frequency|tojson|safe }};
+            var ky = document.querySelector('input[name = "keys"]:checked').id;
+
+            var dayData = {
+                labels: freqs[ky]['day'][0],
+                datasets: [{
+                    data: freqs[ky]['day'][1]
+                }]
+            };
+            var hourData = {
+                labels: freqs[ky]['hour'][0],
+                datasets: [{
+                    data: freqs[ky]['hour'][1]
+                }]
+            };
+            var weekData = {
+                labels: freqs[ky]['week'][0],
+                datasets: [{
+                    data: freqs[ky]['week'][1]
+                }]
+            };
+            var twoweeksData = {
+                labels: freqs[ky]['twoweeks'][0],
+                datasets: [{
+                    data: freqs[ky]['twoweeks'][1]
+                }]
+            };
+            var monthData = {
+                labels: freqs[ky]['month'][0],
+                datasets: [{
+                    data: freqs[ky]['month'][1]
+                }]
+            };
+
+            if(hour.checked)
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: hourData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            else if(day.checked)
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: dayData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            else if(week.checked)
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: weekData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            else if(month.checked)
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: monthData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            else
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: twoweeksData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            }
+
+
+    </script>
+</html>

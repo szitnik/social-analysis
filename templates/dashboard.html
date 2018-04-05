@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {{"decoupled-map"|googlemap_js(37.4419, -122.1419, markers=[(37.4419, -122.1419)])}}
+        {{sndmap.js}}
+
+        <style>
+            div.col2 {
+               -moz-column-count: 2;
+               -webkit-column-count: 2;
+               column-count: 2;
+            }
+            br {
+               display: block;
+               margin-top: 10px;
+            }
+            br-comm {
+               display: block;
+            }
+            div.colbreak {
+                  -webkit-column-break-inside: avoid;
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+            .row {
+                display: -ms-flexbox;
+                display: -webkit-flex;
+                display: flex;
+            }
+
+            .col {
+                -webkit-flex: 1;
+                -ms-flex: 1;
+                flex: 1;
+                padding: 1em;
+                font-size: 12px;
+            }
+            .submit_form{
+                width: 50%;
+            }
+            checklabel {
+                display: inline-block;
+            }
+        </style>
+        <meta charset="utf-8" />
+        <script src='../static/Chart.min.js'></script>
+        <script src='../static/Chart.bundle.js'></script>
+    </head>
+
+    <body>
+        <h3>SocioPower - dashboard</h3>
+        <div class="submit_form">
+            <form action="." method="POST">
+                <p>Keywords (separated with AND/OR):<br>
+                <input type="text" name="query" value="{{ request.form['query'] }}" style="width: 90%;"><br>
+                From date: <input type="date" name="date_from" value="{{ request.form['date_from'] }}"><br>
+                To date: <input type="date" name="date_to" value="{{ request.form['date_to']  }}"><br>
+                <!--<p> <input type="text" name="limit" value="{{ request.form['limit'] }}"> : limit</p>-->
+                Media: <checklabel> <input type="checkbox" name="soc_media" value="facebook" id="facebook"> Facebook </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="twitter" id="twitter"> Twitter </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="googleplus" id="googleplus"> Google+ </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="tumblr" id="tumblr"> Tumblr </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="youtube" id="youtube" > Youtube </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="blogger" id="blogger"> Blogger </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="foursquare" id="foursquare"> Foursquare </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="tripadvisor" id="tripadvisor"> Tripadvisor </checklabel>
+                    <checklabel><input type="checkbox" name="selectall" onClick="toggle(this)"> Select all</checklabel> <br> <br>
+                    <input type="submit" name="query-form" value="Submit"> </p>
+            </form>
+        </div>
+
+        <div class="row">
+            <div class="col">   <h4>Total reach: </h4>
+                                <h1>{{ reach }}</h1> </div>
+            <div class="col">   <h4>Total engagement: </h4>
+                                <h1>{{ engagement }}</h1> </div>
+            <div class="col">   <h4>Total mentions: </h4>
+                                <h1>{{ mention }}</h1> </div>
+            <div class="col">   </div>
+        </div>
+
+        <div class="row">
+            <div class="col"><canvas id="pieChart" height="100"></canvas> </div>
+            <div class="col"><canvas id="freqChart" height="100"></canvas>
+                <center>
+                <input type="radio" name="freq" value="week" id="week" onclick="charfunc()" checked> Week
+                <input type="radio" name="freq" value="twoweeks" id="twoweeks" onclick="charfunc()"> 2 Weeks
+                <input type="radio" name="freq" value="month" id="month" onclick="charfunc()"> Month
+                </center>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col"> <canvas id="userBar" width="50"></canvas> </div>
+            <div class="col"> <img src="../static/images/{{ filename }}" alt="text"> </div>
+        </div>
+
+        <div class="row">
+            <div class="col"> <canvas id="pieChartCountry" height="100"></canvas> </div>
+            <div class="col"> <canvas id="pieChartLanguage" height="100"></canvas> </div>
+        </div>
+
+        <div class="row">
+            <div class="col"> <center> {{sndmap.html}}
+                <img src="http://maps.google.com/mapfiles/ms/icons/red-dot.png" width=20 /> traffic from twitter
+                <img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png" width=20 /> tweets
+                <img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" width=20 /> facebook events
+                <img src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png" width=20 /> facebook, foursquare and tripadvisor venues </center>
+            </div>
+        </div>
+
+        <h4>Latest results: </h4>
+        <input type="radio" name="latest" value="10" id="latest10" onclick="latestfunc()" checked> 10
+        <input type="radio" name="latest" value="15" id="latest15" onclick="latestfunc()"> 15
+        <input type="radio" name="latest" value="20" id="latest20" onclick="latestfunc()"> 20
+
+        <div id="latestprint"><div class="row">
+            {% for key, value in results.iteritems() %}
+                <div class="col">
+                {{ key }} <br>
+                {% for v in range(limit) %}
+                    {% if results[key][v] %}
+                        {% if results[key][v][3] %}
+                            {{ results[key][v][3] }} ({{ results[key][v][2] }}): {{ results[key][v][1] }} <br-comm>
+                            {% if results[key][v][4] %}
+                                {% for comm in results[key][v][4] %}
+                                    * {{ comm[2] }} ({{ comm[1] }}): {{ comm[0] }} <br-comm>
+                                {% endfor %}
+                            {% endif %}
+                        {% else %}
+                            ({{ results[key][v][2] }}): {{ results[key][v][1] }} <br-comm>
+                            {% if results[key][v][4] %}
+                                {% for comm in results[key][v][4] %}
+                                    * {{ comm[2] }} ({{ comm[1] }}): {{ comm[0] }} <br-comm>
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                        <br>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            {% endfor %}
+        </div></div>
+
+        <script>
+            var pieData = {
+                labels: {{ labels|tojson|safe }},
+                datasets: [{
+                    data: {{ values|tojson|safe }},
+                    backgroundColor: {{ colors|tojson|safe }}
+                }]
+            };
+
+            // get bar chart canvas
+            var ctx = document.getElementById("pieChart").getContext("2d");
+            var chartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: pieData,
+                options: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            generateLabels: function(chart) {
+                                var data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map(function(label, i) {
+                                        var meta = chart.getDatasetMeta(0);
+                                        var ds = data.datasets[0];
+                                        var arc = meta.data[i];
+                                        var custom = arc && arc.custom || {};
+                                        var getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
+                                        var arcOpts = chart.options.elements.arc;
+                                        var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                        var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                        var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+
+                                        var value = chart.config.data.datasets[arc._datasetIndex].data[arc._index];
+                                        return {
+                                            text: label + ": " + value,
+                                            fillStyle: fill,
+                                            strokeStyle: stroke,
+                                            lineWidth: bw,
+                                            hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                            index: i
+                                        };
+                                    });
+                                } else {
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Results over media'
+                    }
+                }
+            });
+
+            var weekData = {
+                labels: {{ labels7|tojson|safe }},
+                datasets: [{
+                    data: {{ values7|tojson|safe }}
+                }]
+            };
+            var twoweeksData = {
+                labels: {{ labels14|tojson|safe }},
+                datasets: [{
+                    data: {{ values14|tojson|safe }}
+                }]
+            };
+            var monthData = {
+                labels: {{ labelsM|tojson|safe }},
+                datasets: [{
+                    data: {{ valuesM|tojson|safe }}
+                }]
+            };
+
+            var ctx1 = document.getElementById("freqChart").getContext("2d");
+            var chartInstance = new Chart(ctx1, {
+                type: 'line',
+                data: weekData,
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Results over time'
+                    }
+                 }
+            });
+
+            var userData = {
+                  labels: [{% for item in labelsUser %}
+                                "{{item}}",
+                            {% endfor %}],
+                  datasets: [
+                    {
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                        data: [{% for item in valuesUser %}
+                                  {{item[0]}},
+                                {% endfor %}]
+                    }
+                  ]
+                };
+            var ctx2 = document.getElementById("userBar").getContext("2d");
+            var chart = new Chart(ctx2, {
+                type: 'horizontalBar',
+                data: userData,
+                options: {
+                  legend: { display: false },
+                  title: {
+                    display: true,
+                    text: 'Top influencers'
+                  }
+                }
+            });
+
+            function charfunc()
+            {
+            var week = document.getElementById('week');
+            var twoweeks = document.getElementById('twoweeks');
+
+            if(week.checked)
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: weekData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            else if(month.checked)
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: monthData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            else
+                {
+                    var chartInstance = new Chart(ctx1, {
+                        type: 'line',
+                        data: twoweeksData,
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Results over time'
+                            }
+                         }
+                    });
+                }
+            }
+
+            var pieCountryData = {
+                labels: {{ labelsCountry|tojson|safe }},
+                datasets: [{
+                    data: {{ valuesCountry|tojson|safe }},
+                    backgroundColor: {{ colorsCountry|tojson|safe }}
+                }]
+            };
+
+            // get bar chart canvas
+            var ctxCountry = document.getElementById("pieChartCountry").getContext("2d");
+            var chartInstanceCountry = new Chart(ctxCountry, {
+                type: 'pie',
+                data: pieCountryData,
+                options: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            generateLabels: function(chart) {
+                                var data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map(function(label, i) {
+                                        var meta = chart.getDatasetMeta(0);
+                                        var ds = data.datasets[0];
+                                        var arc = meta.data[i];
+                                        var custom = arc && arc.custom || {};
+                                        var getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
+                                        var arcOpts = chart.options.elements.arc;
+                                        var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                        var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                        var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+
+                                        var value = chart.config.data.datasets[arc._datasetIndex].data[arc._index];
+                                        return {
+                                            text: label + ": " + value,
+                                            fillStyle: fill,
+                                            strokeStyle: stroke,
+                                            lineWidth: bw,
+                                            hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                            index: i
+                                        };
+                                    });
+                                } else {
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Results over countries ('+{{per_country}}+')'
+                    }
+                }
+            });
+
+            var pieLanguageData = {
+                labels: {{ labelsLanguage|tojson|safe }},
+                datasets: [{
+                    data: {{ valuesLanguage|tojson|safe }},
+                    backgroundColor: {{ colorsCountry|tojson|safe }}
+                }]
+            };
+
+            // get bar chart canvas
+            var ctxLanguage = document.getElementById("pieChartLanguage").getContext("2d");
+            var chartInstanceLanguage = new Chart(ctxLanguage, {
+                type: 'pie',
+                data: pieLanguageData,
+                options: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            generateLabels: function(chart) {
+                                var data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map(function(label, i) {
+                                        var meta = chart.getDatasetMeta(0);
+                                        var ds = data.datasets[0];
+                                        var arc = meta.data[i];
+                                        var custom = arc && arc.custom || {};
+                                        var getValueAtIndexOrDefault = Chart.helpers.getValueAtIndexOrDefault;
+                                        var arcOpts = chart.options.elements.arc;
+                                        var fill = custom.backgroundColor ? custom.backgroundColor : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
+                                        var stroke = custom.borderColor ? custom.borderColor : getValueAtIndexOrDefault(ds.borderColor, i, arcOpts.borderColor);
+                                        var bw = custom.borderWidth ? custom.borderWidth : getValueAtIndexOrDefault(ds.borderWidth, i, arcOpts.borderWidth);
+
+                                        var value = chart.config.data.datasets[arc._datasetIndex].data[arc._index];
+                                        return {
+                                            text: label + ": " + value,
+                                            fillStyle: fill,
+                                            strokeStyle: stroke,
+                                            lineWidth: bw,
+                                            hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+                                            index: i
+                                        };
+                                    });
+                                } else {
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Results over languages'
+                    }
+                }
+            });
+
+
+            function toggle(source) {
+              checkboxes = document.getElementsByName('soc_media');
+              for(var i=0, n=checkboxes.length; i<n;i++) {
+                checkboxes[i].checked = source.checked;
+              }
+            }
+
+            function latestfunc(){
+                var latest10 = document.getElementById('latest10');
+                var latest15 = document.getElementById('latest15');
+                if(latest10.checked){
+                    var limit1 = document.getElementById('latest10').value;
+                }
+                else if(latest15.checked){
+                    var limit1 = document.getElementById('latest15').value;
+                }
+                else{
+                    var limit1 = document.getElementById('latest20').value;
+                }
+
+                var res = {{ results|tojson|safe }};
+                var mytable = "<div class=\"row\">";
+
+                for (var key in res){
+                    mytable+="<div class=\"col\">"+key+"<br>";
+                    for (var v=0; v<limit1; v++){
+                        if (res[key][v]){
+                            if (res[key][v][3]){
+                                var fromDate = res[key][v][2];
+                                mytable += res[key][v][3]+" ("+fromDate+"): "+res[key][v][1]+"<br.comm>";
+                                var comments = res[key][v][4];
+                                if (comments.length > 0){
+                                    for (var c=0; c<comments.length; c++){
+                                        var commentDate = comments[c][1];
+                                        mytable += "* "+comments[c][2]+" ("+commentDate+"): "+comments[c][0]+"<br-comm>";
+                                    }
+                                }
+                            }
+                            else{
+                                var fromDate = res[key][v][2];
+                                mytable += "("+fromDate+"): "+res[key][v][1]+"<br-comm>";
+                                var comments = res[key][v][4];
+                                if (comments.length > 0){
+                                    for (var c=0; c<comments.length; c++){
+                                        var commentDate = comments[c][1];
+                                        mytable += "* "+comments[c][2]+" ("+commentDate+"): "+comments[c][0]+"<br-comm>";
+                                    }
+                                }
+                            }
+                            mytable += "<br>"
+                        }
+                    }
+                    mytable+="<br></div>";
+                }
+                mytable+="</div>";
+                document.getElementById("latestprint").innerHTML = mytable;
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,95 @@
+{ 
+"facebook-group-post-29749491497_10154966017781498": {
+  "gender": "f", 
+  "sentiment": {
+    "probability": 0.5, 
+    "sentiment": "neg"
+  }, 
+  "language": {
+    "probability": 0.5, 
+    "language": "sl"
+  }, 
+  "created": "2018-01-08 14:32:15", 
+  "URL": "http://www.facebook.com/29749491497_10154966017781498", 
+  "text": "Spo\u0161tovan gospod Jan prosila bi Vas za res veliko uslugo. Prosila bi vas,\u010de bi mi dali Va\u0161 gmail,da bi Vam postavila nekaj vpra\u0161anj o Va\u0161em vsakdanu.Lepo Vas pozdravljam in se Vam \u017ee v naprej zahvaljujem.u\u010denka O\u0160 Stra\u017ei\u0161\u010de", 
+  "keyword": "jan plestenjak", 
+  "type": "facebook-group-post", 
+  "id": "29749491497_10154966017781498", 
+  "group_data": {
+    "URL": "http://www.facebook.com/29749491497", 
+    "description": null, 
+    "privacy": null, 
+    "id": 29749491497, 
+    "name": "Jan Plestenjak"
+  }
+},
+"twitter-post-950313651856203778": {
+  "tags": "", 
+  "URL": "https://twitter.com/Interior/status/950313651856203778", 
+  "text": "Jan Plestenjak se vra\u010da jesni! https://t.co/X5CCCbOSRz https://t.co/gANqLPVrlc", 
+  "nr_retweets": 0, 
+  "keyword": "jan plestenjak", 
+  "id": "950313651856203778", 
+  "sentiment": {
+    "probability": 0.5, 
+    "sentiment": ""
+  }, 
+  "language": {
+    "probability": 0.5, 
+    "language": "hr"
+  }, 
+  "created": "2018-01-08 10:30:05", 
+  "coordinates": "", 
+  "place": "", 
+  "nr_favourites": 0, 
+  "type": "twitter-post", 
+  "user": {
+    "description": "Za (skoraj) vse, kar se zanimivega zgodi, \u010divka ali govori!", 
+    "ULR": "http://www.twitter.com/govorise", 
+    "nr_posts": 31209, 
+    "nr_followers": 1566, 
+    "id": "15848596", 
+    "screen_name": "govorise", 
+    "nr_friends": 1379, 
+    "name": "govorise", 
+    "language": "en", 
+    "created": "2008-08-14 09:43:18", 
+    "time_zone": "Ljubljana", 
+    "location": "Slovenia"
+  }
+},
+"twitter-post-950389696869355520": {
+  "tags": "", 
+  "URL": "https://twitter.com/Interior/status/950389696869355520", 
+  "text": "Men se zdi Jan Plestenjak en tak jugos po melodiji, glasu, ritmu. Tko mal za radio Aktual. Pa vam? Skoda mi je njeg\u2026 https://t.co/R7KZyfnO3v", 
+  "nr_retweets": 0, 
+  "keyword": "jan plestenjak", 
+  "id": "950389696869355520", 
+  "sentiment": {
+    "probability": 0.5, 
+    "sentiment": ""
+  }, 
+  "language": {
+    "probability": 0.5, 
+    "language": "hr"
+  }, 
+  "created": "2018-01-08 15:32:15", 
+  "coordinates": "", 
+  "place": "", 
+  "nr_favourites": 0, 
+  "type": "twitter-post", 
+  "user": {
+    "description": "The older you get, the less people you trust.", 
+    "ULR": "http://www.twitter.com/krentip", 
+    "nr_posts": 8723, 
+    "nr_followers": 249, 
+    "id": "1299662876", 
+    "screen_name": "krentip", 
+    "nr_friends": 294, 
+    "name": "kr en Mitja", 
+    "language": "en", 
+    "created": "2013-03-25 14:17:03", 
+    "time_zone": "Amsterdam", 
+    "location": ""
+  }
+},

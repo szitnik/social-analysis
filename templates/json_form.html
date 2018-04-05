@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <style>
+    input:disabled + label {
+        color:#ccc; }
+    .disabled { color: #999; }
+    .enabled { color: #000; }
+    </style>
+
+    <body>
+        <h3>SocioPower - create JSON</h3>
+        <form action="." method="POST">
+            <p>Keyword: <input type="text" name="query">
+            <p>From date: <input type="date" name="date_from", value="{{dateWeek}}">
+            <p>To date: <input type="date" name="date_to", value="{{dateToday}}">
+
+            <p> Type of search:
+                <input type="radio" name="search" value="search" onclick="search_poss()" checked> Basic search
+                <input type="radio" name="search" value="search_location" onclick="search_location_poss()"> Location search
+                <p><label class="disabled" for="location" id="location_label"> Location (format: "46.36, 15.11, 100"): </label> <input type="text" name="location" id="location" disabled>
+                 </p>
+            </p>
+
+            <p> Media:
+                <input type="checkbox" name="soc_media" value="facebook" id="facebook">
+                <label for="facebook"> Facebook </label>
+                <input type="checkbox" name="soc_media" value="twitter" id="twitter">
+                <label for="twitter"> Twitter </label>
+                <input type="checkbox" name="soc_media" value="googleplus" id="googleplus">
+                <label for="googleplus"> Google+ </label>
+                <input type="checkbox" name="soc_media" value="tumblr" id="tumblr">
+                <label for="tumblr"> Tumblr </label>
+                <input type="checkbox" name="soc_media" value="youtube" id="youtube" >
+                <label for="youtube"> Youtube </label>
+                <checklabel><input type="checkbox" name="selectall" onClick="toggle(this)"> Select all</checklabel> <br>
+            </p>
+
+            <p> Write to:
+                <input type="radio" name="write" value="one_file" checked> One file
+                <input type="radio" name="write" value="multiple_files"> Separate files (for each media)
+            </p>
+
+            <hr width="50%" align="left">
+
+            <p>Sensibility for language detection: <input type="text" name="lang_sens" value="0.5"></p>
+            <p>Sensibility for sentiment analysis: <input type="text" name="sent_sens" value="0.5"></p>
+            <p>Sensibility for gender detection: <input type="text" name="gend_sens" value="0.5"></p>
+            <p>Number of predictions for gender detection: <input type="text" name="gend_nr_predictions" value="10"></p>
+            <p>Percentage of same genders for gender detection: <input type="text" name="gend_pr_predictions" value="0.9"></p>
+
+            <p> <input type="submit" name="query-form" value="Submit"> </p>
+        </form>
+
+    <script>
+    function search_poss() {
+        document.getElementById("facebook").disabled = false;
+        document.getElementById("twitter").disabled = false
+        document.getElementById("googleplus").disabled = false;
+        document.getElementById("tumblr").disabled = false;
+        document.getElementById("youtube").disabled = false;
+        document.getElementById("location").disabled = true;
+        document.getElementById('location_label').classList.remove('enabled');
+        document.getElementById('location_label').classList.add('disabled');
+    }
+    function search_location_poss() {
+        document.getElementById("facebook").disabled = true;
+        document.getElementById("twitter").disabled = false
+        document.getElementById("googleplus").disabled = true;
+        document.getElementById("tumblr").disabled = true;
+        document.getElementById("youtube").disabled = false;
+        document.getElementById("location").disabled = false;
+        document.getElementById('location_label').classList.remove('disabled');
+        document.getElementById('location_label').classList.add('enabled');
+    }
+    function toggle(source) {
+        checkboxes = document.getElementsByName('soc_media');
+        for(var i=0, n=checkboxes.length;i<n;i++) {
+            if (checkboxes[i].disabled == false) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    }
+    </script>
+    </body>
+</html>

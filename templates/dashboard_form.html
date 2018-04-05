@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            br {
+               display: block;
+               margin-top: 10px;
+            }
+            .submit_form{
+                width: 50%;
+            }
+            checklabel {
+                display: inline-block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h3>SocioPower - dashboard</h3>
+        <div class="submit_form">
+            <form action="." method="POST">
+                <p>Keywords (separated with AND/OR):<br>
+                <input type="text" name="query" style="width: 90%;"><br>
+                From date: <input type="date" name="date_from" value="{{ dateMonth }}"><br>
+                To date: <input type="date" name="date_to" value="{{ dateToday }}"><br>
+                Media: <checklabel> <input type="checkbox" name="soc_media" value="facebook" id="facebook"> Facebook </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="twitter" id="twitter"> Twitter </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="googleplus" id="googleplus"> Google+ </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="tumblr" id="tumblr"> Tumblr </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="youtube" id="youtube" > Youtube </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="blogger" id="blogger"> Blogger </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="foursquare" id="foursquare"> Foursquare </checklabel>
+                    <checklabel> <input type="checkbox" name="soc_media" value="tripadvisor" id="tripadvisor"> Tripadvisor </checklabel>
+                    <checklabel><input type="checkbox" name="selectall" onClick="toggle(this)"> Select all</checklabel> <br>
+                    <input type="submit" name="query-form" value="Submit"> </p>
+            </form>
+        </div>
+    </body>
+
+    <script>
+        function toggle(source) {
+            checkboxes = document.getElementsByName('soc_media');
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script>
+</html>

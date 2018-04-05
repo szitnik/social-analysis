@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            br {
+               display: block;
+               margin-top: 10px;
+            }
+            .submit_form{
+                width: 50%;
+            }
+            checklabel {
+                display: inline-block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h3>SocioPower - language, sentiment and gender detection</h3>
+        <div class="submit_form">
+            <form action="." method="POST">
+                <p>Keyword: <input type="text" name="query" style="width: 90%;"><br>
+                From date: <input type="date" name="date_from" value="{{ dateWeek }}"><br>
+                To date: <input type="date" name="date_to" value="{{ dateToday }}"><br>
+                Media: <p> <input type="radio" name="media" value="facebook" checked> Facebook
+                        <input type="radio" name="media" value="twitter"> Twitter
+                        <input type="radio" name="media" value="googleplus"> Google+
+                        <input type="radio" name="media" value="tumblr"> Tumblr
+                        <input type="radio" name="media" value="youtube"> YouTube </p>
+
+                <hr width="50%" align="left">
+
+                <p>Sensibility for language detection: <input type="text" name="lang_sens" value="0.5"></p>
+                <p>Sensibility for sentiment analysis: <input type="text" name="sent_sens" value="0.5"></p>
+                <p>Sensibility for gender detection: <input type="text" name="gend_sens" value="0.5"></p>
+                <p>Number of predictions for gender detection: <input type="text" name="gend_nr_predictions" value="10"></p>
+                <p>Percentage of same genders for gender detection: <input type="text" name="gend_pr_predictions" value="0.9"></p>
+
+                    <input type="submit" name="query-form" value="Submit"> </p>
+            </form>
+        </div>
+    </body>
+</html>

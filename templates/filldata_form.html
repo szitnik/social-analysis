@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <style>
+    input:disabled + label {
+        color:#ccc; }
+    </style>
+
+    <body>
+        <h3>SocioPower - fill database</h3>
+        <form action="." method="POST">
+            <p> <input type="text" name="query"> : keyword
+            <p> <input type="date" name="date", value="{{dateWeek}}"> : date to search from
+            <p> <input type="text" name="location" id="location" disabled>
+            <label for="location" >: location (format: "46.36, 15.11, 100") </label> </p>
+
+            <p> <input type="radio" name="search" value="search" onclick="search_poss()" checked> Basic search
+            <input type="radio" name="search" value="search_user" onclick="search_user_poss()"> User search
+            <input type="radio" name="search" value="search_location" onclick="search_location_poss()"> Location search </p>
+
+            <p> <input type="checkbox" name="soc_media" value="facebook" id="facebook">
+            <label for="facebook"> Facebook </label>
+            <input type="checkbox" name="soc_media" value="twitter" id="twitter">
+            <label for="twitter"> Twitter </label>
+            <input type="checkbox" name="soc_media" value="googleplus" id="googleplus">
+            <label for="googleplus"> Google+ </label>
+            <input type="checkbox" name="soc_media" value="tumblr" id="tumblr">
+            <label for="tumblr"> Tumblr </label></p>
+            <p> <input type="checkbox" name="soc_media" value="youtube" id="youtube" >
+            <label for="youtube"> Youtube </label>
+            <input type="checkbox" name="soc_media" value="foursquare" id="foursquare" disabled>
+            <label for="foursquare"> Foursquare </label>
+            <input type="checkbox" name="soc_media" value="tripadvisor" id="tripadvisor"disabled>
+            <label for="tripadvisor"> Tripadvisor </label></p>
+
+            <p> <input type="text" name="blogger"> : Blogger URL to get posts from</p>
+
+            <p> <input type="submit" name="query-form" value="Submit"> </p>
+        </form>
+
+    <script>
+    function search_user_poss() {
+        document.getElementById("facebook").disabled = false;
+        document.getElementById("twitter").disabled = false
+        document.getElementById("googleplus").disabled = false;
+        document.getElementById("tumblr").disabled = true;
+        document.getElementById("youtube").disabled = true;
+        document.getElementById("foursquare").disabled = true;
+        document.getElementById("tripadvisor").disabled = true;
+        document.getElementById("location").disabled = true;
+    }
+    function search_poss() {
+        document.getElementById("facebook").disabled = false;
+        document.getElementById("twitter").disabled = false
+        document.getElementById("googleplus").disabled = false;
+        document.getElementById("tumblr").disabled = false;
+        document.getElementById("youtube").disabled = false;
+        document.getElementById("foursquare").disabled = true;
+        document.getElementById("tripadvisor").disabled = true;
+        document.getElementById("location").disabled = true;
+    }
+    function search_location_poss() {
+        document.getElementById("facebook").disabled = false;
+        document.getElementById("twitter").disabled = false
+        document.getElementById("googleplus").disabled = true;
+        document.getElementById("tumblr").disabled = true;
+        document.getElementById("youtube").disabled = false;
+        document.getElementById("foursquare").disabled = false;
+        document.getElementById("tripadvisor").disabled = false;
+        document.getElementById("location").disabled = false;
+    }
+    </script>
+    </body>
+</html>

@@ -1,0 +1,25 @@
+{ 
+"facebook-group-post-133875690134989_727558550766697": {
+  "gender": "f", 
+  "sentiment": {
+    "probability": "(0.5/10.0/0.8)", 
+    "sentiment": "pos"
+  }, 
+  "language": {
+    "probability": 0.5, 
+    "language": "en"
+  }, 
+  "created": "2018-01-08 08:38:45", 
+  "URL": "http://www.facebook.com/133875690134989_727558550766697", 
+  "text": "It's a good day to eat dessert for breakfast. \u2728", 
+  "keyword": "odprta kuhna", 
+  "type": "facebook-group-post", 
+  "id": "133875690134989_727558550766697", 
+  "group_data": {
+    "URL": "http://www.facebook.com/133875690134989", 
+    "description": null, 
+    "privacy": null, 
+    "id": 133875690134989, 
+    "name": "Odprta kuhna"
+  }
+},
