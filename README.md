@@ -6,7 +6,7 @@ This repository contains accompanying code to the research paper titled "Social 
 
 1. Install required Python 2.7 libraries: `pip install requirements.txt`.
 
-2. Install MySQL database using script `schema.sql`.
+2. Install MySQL database using scripts in folder `database_schema`.
 
 3. Go to python console and issue the following commands:
 
